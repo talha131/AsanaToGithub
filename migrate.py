@@ -163,6 +163,120 @@ def get_repo_from_github(github_api_object, options) :
                 print "Issue tracker is enabled"
     return my_repo
 
+def ask_user_permission(a_task, task_id) :
+    """Asks user permission to copy the task
+
+    :Parameters:
+        - `a_task`: Asana task object
+        - `task_id`: Task id
+    :Returns:
+        True or False depending on the user response
+    """
+
+    print "Task found."
+    print "Title: {}".format(a_task['name'])
+    print "URL: https://app.asana.com/0/{}/{}".format(a_task['workspace']['id'], task_id) 
+    user_input = None
+    while user_input is not 'y' and user_input is not 'n' :
+        user_input = raw_input("Copy it to Github [y/n]")
+    return True if user_input == 'y' else False
+
+def get_label(git_repo, label_name) :
+    """Returns instance of Label() or None
+
+    :Parameter:
+        - `git-repo` : repository at Github to whose issues tracker issues will be copied
+        - `label_name`: Name of the label. Type string
+    """
+
+    try :
+        label = git_repo.get_label(label_name)
+    except :
+        label = None
+
+    return label
+
+def apply_tag_at_asana(asana_api_object, tag_title, workspace_id, task_id) :
+    """Applies a tag to task
+
+    :Parameters:
+        - `asana_api_object`: an instance of Asana
+        - `tag_title`: name of the tag. Type string.
+        - `workspace_id`: id of the workspace in which tag is created
+        - `task_id`: id of the task on which tag is applied
+    """
+
+    tag_id = None
+    all_tags = asana_api_object.get_tags(workspace_id)
+    for atag in all_tags :
+        if atag['name'] == tag_title :
+            tag_id = atag['id']
+            break
+    if not tag_id :
+        new_tag = asana_api_object.create_tag(tag_title, workspace_id)
+        tag_id = new_tag['id']
+
+    asana_api_object.add_tag_task(task_id, tag_id)
+
+def copy_task_to_github(asana_api_object, task, task_id, git_repo, options) :
+    """Copy tasks from Asana to Github
+
+    :Parameters:
+        - `asana_api_object`: an instance of Asana
+        - `a_task`: Asana task object
+        - `task_id`: Task id
+        - `git_repo`: repository at Github to whose issues tracker issues will be copied
+        - `options`: options parsed by OptionParser
+    """
+
+    labels = []
+    if not options.dont_apply_label :
+        a_label = get_label(git_repo, "copied-from-asana")
+        if not a_label :
+            a_label = git_repo.create_label("copied-from-asana","FFFFFF")
+        labels.append(a_label)
+    if not options.dont_apply_project_label :
+        for project in task['projects'] :
+            a_label = get_label(git_repo, project['name'])
+            if not a_label :
+                a_label = git_repo.create_label(project['name'], "FFFFFF")
+            labels.append(a_label)
+    new_issue = git_repo.create_issue(task['name'], task['notes'], labels = labels)
+
+    """Update Asana"""
+    if not options.dont_apply_tag :
+        apply_tag_at_asana(asana_api_object, "copied to github", task['workspace']['id'], task_id)
+    print new_issue.html_url
+        
+def migrate_asana_to_github(asana_api_object, project_id, git_repo, options) :
+    """Manages copying of tasks from Asana to Github issues
+
+    :Parameters:
+        - `asana_api_object`: an instance of Asana
+        - `project_id`: project id whose tasks are to be copied
+        - `git_repo`: repository at Github to whose issues tracker issues will be copied
+        - `options`: options parsed by OptionParser
+    """
+
+    all_tasks = get_tasks(asana_api_object, project_id)
+
+    if len(all_tasks) == 0 :
+        print "{}/{} does not have any task in it".format(options.workspace, options.project)
+        return
+
+    for a_task in all_tasks :
+        task = asana_api_object.get_task(a_task['id'])
+        """Filter completed and incomplete tasks. Copy if task is incomplete or even completed tasks are to be copied"""
+        if not task['completed'] or options.copy_completed :
+            if options.interactive :
+                should_copy = ask_user_permission(task, a_task['id']) 
+            else :
+                should_copy = True
+            if should_copy :
+               copy_task_to_github(asana_api_object, task, a_task['id'], git_repo, options) 
+            else :
+                print "Task skipped."
+
 def main() :
     parser = parse()
     (options, args) = parser.parse_args()
@@ -185,6 +299,8 @@ def main() :
     git_repo = get_repo_from_github(github_api, options)
     if not git_repo:
         exit(1)
+
+    migrate_asana_to_github(asana_api, project_id, git_repo, options)
 
     exit(0)
 
