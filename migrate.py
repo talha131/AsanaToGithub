@@ -31,7 +31,7 @@ def print_workspaces(asana_api_object) :
 def get_workspace_id(asana_api_object, workspace) :
     """Returns id of the workspace
 
-    :Parameter:
+    :Parameters:
         - `asana_api_object`: an instance of Asana
         - `workspace`: name or id of the workspace
     """
@@ -47,7 +47,7 @@ def get_workspace_id(asana_api_object, workspace) :
 def print_projects(asana_api_object, workspace_id) :
     """Prints a list of available projects in the workspace on stdout
     
-    :Parameter:
+    :Parameters:
         - `asana_api_object`: an instance of Asana
         - `workspace_id`: id of the workspace whose projects are to be listed
     """
@@ -60,7 +60,7 @@ def print_projects(asana_api_object, workspace_id) :
 def get_project_id(asana_api_object, workspace_id, project) :
     """Returns id of the project 
     
-    :Parameter:
+    :Parameters:
         - `asana_api_object`: an instance of Asana
         - `workspace_id`: id of the workspace that has the project
         - `project`: name of id of the project
@@ -77,7 +77,7 @@ def get_project_id(asana_api_object, workspace_id, project) :
 def get_tasks(asana_api_object, project_id) :
     """Returns all the tasks present in the project
     
-    :Parameter:
+    :Parameters:
         - `asana_api_object`: an instance of Asana
         - `project_id`: id of the project whose tasks are to be fetched
     """
@@ -87,7 +87,7 @@ def get_tasks(asana_api_object, project_id) :
 def get_project_id_from_asana(asana_api_object, options) :
     """Returns project id and handle cases when workspace or project is not specified at command line
 
-    :Parameter:
+    :Parameters:
         - `asana_api_object`: an instance of Asana
         - `options`: options parsed by OptionParser
     """
@@ -126,7 +126,7 @@ def print_repos(github_api_object) :
 def get_repo(github_api_object, repo_full_name) :
     """Return an instance of repo
     
-    :Parameter:
+    :Parameters:
         - `github_api_object`: an instance of Github
         - `repo_full_name`: full name of the repo on Github, for example, talha131/try
     """
@@ -142,7 +142,7 @@ def get_repo(github_api_object, repo_full_name) :
 def get_repo_from_github(github_api_object, options) :
     """Return an instance of repo and handle cases when repo is not specified or is invalid
     
-    :Parameter:
+    :Parameters:
         - `github_api_object`: an instance of Github
         - `options`: options parsed by OptionParser
     """
