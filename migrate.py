@@ -14,6 +14,7 @@ def parse() :
     parser.add_option("--dont-apply-tag", action="store_true", dest="dont_apply_tag", default=False, help="every task copied to Github gets a tag copied-to-github at Asana. Use this switch to disable it.")
     parser.add_option("--dont-apply-label", action="store_true", dest="dont_apply_label", default=False, help="every issue copied to Github gets a label copied-from-asana at Github. Use this switch to disable it.")
     parser.add_option("--dont-apply-project-label", action="store_true", dest="dont_apply_project_label", default=False, help="Asana project is applied as label at Github to the copied task. Use this switch to disable it.")
+    parser.add_option("--dont-update-story", action="store_true", dest="dont_update_story", default=False, help="link of copied Github issues is added to Asana task story. Use this switch to disable it.")
     return parser
 
 def print_workspaces(asana_api_object) :
@@ -218,6 +219,17 @@ def apply_tag_at_asana(asana_api_object, tag_title, workspace_id, task_id) :
 
     asana_api_object.add_tag_task(task_id, tag_id)
 
+def add_story_to_assana(asana_api_object, task_id, text) :
+    """Adds a new story to the task
+
+    :Parameters:
+        - `asana_api_object`: an instance of Asana
+        - `task_id`: Task id
+        - `text`: story
+    """
+
+    asana_api_object.add_story(task_id, text)
+
 def copy_task_to_github(asana_api_object, task, task_id, git_repo, options) :
     """Copy tasks from Asana to Github
 
@@ -246,8 +258,10 @@ def copy_task_to_github(asana_api_object, task, task_id, git_repo, options) :
     """Update Asana"""
     if not options.dont_apply_tag :
         apply_tag_at_asana(asana_api_object, "copied to github", task['workspace']['id'], task_id)
-    print new_issue.html_url
-        
+    if not options.dont_update_story :
+        story = "{}{}".format("This task can be seen at ", new_issue.html_url)
+        add_story_to_assana(asana_api_object, task_id, story)
+
 def migrate_asana_to_github(asana_api_object, project_id, git_repo, options) :
     """Manages copying of tasks from Asana to Github issues
 
