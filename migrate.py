@@ -279,13 +279,16 @@ def copy_task_to_github(asana_api_object, task, task_id, git_repo, options) :
 
     """Add stories to Github"""
     if not options.dont_copy_stories :
+        print "Copying stories to Github"
         copy_stories_to_github(asana_api_object, task_id, new_issue)
 
     """Update Asana"""
     if not options.dont_apply_tag :
+        print "Applying tag to Asana item"
         apply_tag_at_asana(asana_api_object, "copied to github", task['workspace']['id'], task_id)
     if not options.dont_update_story :
         story = "{}{}".format("This task can be seen at ", new_issue.html_url.encode("utf-8"))
+        print "Updating story of Asana item"
         add_story_to_assana(asana_api_object, task_id, story)
 
 def migrate_asana_to_github(asana_api_object, project_id, git_repo, options) :
@@ -298,6 +301,7 @@ def migrate_asana_to_github(asana_api_object, project_id, git_repo, options) :
         - `options`: options parsed by OptionParser
     """
 
+    print "Fetching tasks from Asana"
     all_tasks = get_tasks(asana_api_object, project_id)
 
     if len(all_tasks) == 0 :
@@ -330,7 +334,7 @@ def main() :
             parser.error("Github password is required")
         exit(1)
 
-    asana_api = asana.AsanaAPI(args[0], debug=True)  
+    asana_api = asana.AsanaAPI(args[0], debug=False)  
     project_id = get_project_id_from_asana(asana_api, options)
     if not project_id :
         exit(1)
