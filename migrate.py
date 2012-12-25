@@ -241,15 +241,23 @@ def copy_stories_to_github(asana_api_object, task_id, issue) :
     """
 
     comment = ""
+    attachment = ""
     all_stories = asana_api_object.list_stories(task_id)
     for astory in all_stories :
         if astory['type'] == "comment" :
             the_time = dateutil.parser.parse(astory['created_at'])
             the_time = the_time.strftime("%b-%d-%Y %H:%M %z")
-            comment = comment + """{}: {} wrote "{}"\n""".format(the_time, astory['created_by']['name'].encode("utf-8"), astory['text'].encode("utf-8"))
+            comment = comment + """*{}*: **{}** wrote "{}"\n""".format(the_time, astory['created_by']['name'].encode("utf-8"), astory['text'].encode("utf-8"))
+        if astory['type'] == "system" and astory['text'][:9] == "attached " :
+            attachment = attachment + "1. [Link to attachment]({})\n".format(astory['text'][9:])
 
     if len(comment) > 0 :
-        issue.create_comment(comment)
+        comment = "### Comments\n" + comment
+    if len(attachment) > 0 :
+        attachment = "### Attachments\n" + attachment 
+    if len(comment) > 0 and len(attachment) > 0 :
+        final_comment = attachment + "\n" + comment
+        issue.create_comment(final_comment)
 
 def copy_task_to_github(asana_api_object, task, task_id, git_repo, options) :
     """Copy tasks from Asana to Github
