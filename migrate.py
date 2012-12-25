@@ -24,18 +24,15 @@ def print_workspaces(asana_api_object) :
         print item['name']
 
 def get_workspace_id(asana_api_object, workspace) :
-    """Finds id of the workspace
+    """Returns id of the workspace
 
     :Parameter:
         - `asana_api_object`: an instance of Asana
         - `workspace`: name or id of the workspace
-
-    :Returns:
-        Returns the worksapce id or -1 in case workspace is not found
     """
 
     my_spaces = asana_api_object.list_workspaces()
-    w_id = -1
+    w_id = None
     for item in my_spaces :
         if item['name'] == workspace or item['id'] == workspace :
             w_id = item['id']
@@ -56,19 +53,16 @@ def print_projects(asana_api_object, workspace_id) :
         print item['name']
 
 def get_project_id(asana_api_object, workspace_id, project) :
-    """Finds id of the project 
+    """Returns id of the project 
     
     :Parameter:
         - `asana_api_object`: an instance of Asana
         - `workspace_id`: id of the workspace that has the project
         - `project`: name of id of the project
-    
-    :Returns:
-        Returns the project id or -1 in case project is not found
     """
 
     my_projects = asana_api_object.list_projects(workspace_id)
-    p_id = -1
+    p_id = None
     for item in my_projects :
         if item['name'] == project or item['id'] == project :
             p_id = item['id']
@@ -97,7 +91,7 @@ def get_project_id_from_asana(asana_api_object, options) :
         print_workspaces(asana_api_object)
     else :  
         workspace_id = get_workspace_id(asana_api_object, options.workspace)
-        if workspace_id < 0 :
+        if not workspace_id :
             print "Workspace not found. Make sure you have entered correct workspace name."
             return
         else :
@@ -107,7 +101,7 @@ def get_project_id_from_asana(asana_api_object, options) :
         print_projects(asana_api_object, workspace_id)
     else :
         project_id = get_project_id(asana_api_object, workspace_id, options.project)
-        if project_id < 0 :
+        if not project_id :
             print "Project not found. Make sure you have entered correct project name."
             return
         else :
