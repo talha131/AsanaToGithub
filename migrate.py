@@ -42,7 +42,7 @@ def get_workspace_id(asana_api_object, workspace) :
     my_spaces = asana_api_object.list_workspaces()
     w_id = None
     for item in my_spaces :
-        if item['name'] == workspace or item['id'] == workspace :
+        if item['name'].encode("utf-8") == workspace or item['id'] == workspace :
             w_id = item['id']
             break
     return w_id
@@ -72,7 +72,7 @@ def get_project_id(asana_api_object, workspace_id, project) :
     my_projects = asana_api_object.list_projects(workspace_id)
     p_id = None
     for item in my_projects :
-        if item['name'] == project or item['id'] == project :
+        if item['name'].encode("utf-8") == project or item['id'] == project :
             p_id = item['id']
             break
     return p_id
@@ -176,8 +176,7 @@ def ask_user_permission(a_task, task_id) :
         True or False depending on the user response
     """
 
-    print "Task found."
-    print "Title: {}".format(a_task['name'])
+    print "Task title: {}".format(a_task['name'].encode("utf-8"))
     print "URL: https://app.asana.com/0/{}/{}".format(a_task['workspace']['id'], task_id) 
     user_input = None
     while user_input is not 'y' and user_input is not 'n' :
@@ -193,7 +192,7 @@ def get_label(git_repo, label_name) :
     """
 
     try :
-        label = git_repo.get_label(label_name)
+        label = git_repo.get_label(label_name.encode("utf-8"))
     except :
         label = None
 
@@ -247,7 +246,7 @@ def copy_stories_to_github(asana_api_object, task_id, issue) :
         if astory['type'] == "comment" :
             the_time = dateutil.parser.parse(astory['created_at'])
             the_time = the_time.strftime("%b-%d-%Y %H:%M %z")
-            comment = comment + """{}: {} wrote "{}"\n""".format(the_time, astory['created_by']['name'], astory['text'])
+            comment = comment + """{}: {} wrote "{}"\n""".format(the_time, astory['created_by']['name'].encode("utf-8"), astory['text'].encode("utf-8"))
 
     if len(comment) > 0 :
         issue.create_comment(comment)
@@ -275,6 +274,7 @@ def copy_task_to_github(asana_api_object, task, task_id, git_repo, options) :
             if not a_label :
                 a_label = git_repo.create_label(project['name'], "FFFFFF")
             labels.append(a_label)
+    print "Creating issue: {}".format(task['name'].encode("utf-8"))
     new_issue = git_repo.create_issue(task['name'], task['notes'], labels = labels)
 
     """Add stories to Github"""
@@ -285,7 +285,7 @@ def copy_task_to_github(asana_api_object, task, task_id, git_repo, options) :
     if not options.dont_apply_tag :
         apply_tag_at_asana(asana_api_object, "copied to github", task['workspace']['id'], task_id)
     if not options.dont_update_story :
-        story = "{}{}".format("This task can be seen at ", new_issue.html_url)
+        story = "{}{}".format("This task can be seen at ", new_issue.html_url.encode("utf-8"))
         add_story_to_assana(asana_api_object, task_id, story)
 
 def migrate_asana_to_github(asana_api_object, project_id, git_repo, options) :
