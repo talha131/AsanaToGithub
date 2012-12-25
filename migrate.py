@@ -246,8 +246,8 @@ def copy_stories_to_github(asana_api_object, task_id, issue) :
     for astory in all_stories :
         if astory['type'] == "comment" :
             the_time = dateutil.parser.parse(astory['created_at'])
-            the_time = the_time.strftime("%b-%d-%Y %H:%M %z")
-            comment = comment + """*{}*: **{}** wrote "{}"\n""".format(the_time, astory['created_by']['name'].encode("utf-8"), astory['text'].encode("utf-8"))
+            the_time = the_time.strftime("%b-%d-%Y %H:%M %Z")
+            comment = comment + """*{}*: **{}** wrote "{}"\n""".format(the_time, astory['created_by']['name'].encode("utf-8"), astory['text'].encode("utf-8").strip())
         if astory['type'] == "system" and astory['text'][:9] == "attached " :
             attachment = attachment + "1. [Link to attachment]({})\n".format(astory['text'][9:])
 
@@ -283,7 +283,7 @@ def copy_task_to_github(asana_api_object, task, task_id, git_repo, options) :
                 a_label = git_repo.create_label(project['name'], "FFFFFF")
             labels.append(a_label)
     print "Creating issue: {}".format(task['name'].encode("utf-8"))
-    meta = "### Meta\n[Asana task](https://app.asana.com/0/{}/{}) was created at {}.".format(task['workspace']['id'], task_id, dateutil.parser.parse(task['created_at']).strftime("%b-%d-%Y %H:%M %z"))
+    meta = "### Meta\n[Asana task](https://app.asana.com/0/{}/{}) was created at {}.".format(task['workspace']['id'], task_id, dateutil.parser.parse(task['created_at']).strftime("%b-%d-%Y %H:%M %Z"))
     if task['due_on'] :
         meta = meta + " It is due on {}.".format(dateutil.parser.parse(task['due_on']).strftime("%b-%d-%Y"))
     body = task['notes'].encode("utf-8") + "\n" + meta
