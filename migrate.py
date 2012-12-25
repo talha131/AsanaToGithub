@@ -15,6 +15,7 @@ def parse() :
     parser.add_option("--dont-apply-label", action="store_true", dest="dont_apply_label", default=False, help="every issue copied to Github gets a label copied-from-asana at Github. Use this switch to disable it.")
     parser.add_option("--dont-apply-project-label", action="store_true", dest="dont_apply_project_label", default=False, help="Asana project is applied as label at Github to the copied task. Use this switch to disable it.")
     parser.add_option("--dont-update-story", action="store_true", dest="dont_update_story", default=False, help="link of copied Github issues is added to Asana task story. Use this switch to disable it.")
+    parser.add_option("--dont-copy-stories", action="store_true", dest="dont_copy_stories", default=False, help="Asana task stories are added as comment to the Github issue. Use this switch to disable it.")
     return parser
 
 def print_workspaces(asana_api_object) :
@@ -169,7 +170,7 @@ def ask_user_permission(a_task, task_id) :
 
     :Parameters:
         - `a_task`: Asana task object
-        - `task_id`: Task id
+        - `task_id`: task id
     :Returns:
         True or False depending on the user response
     """
@@ -224,11 +225,27 @@ def add_story_to_assana(asana_api_object, task_id, text) :
 
     :Parameters:
         - `asana_api_object`: an instance of Asana
-        - `task_id`: Task id
+        - `task_id`: task id
         - `text`: story
     """
 
     asana_api_object.add_story(task_id, text)
+
+def copy_stories_to_github(asana_api_object, task_id, issue) :
+    """Copy task story from Asana to Github
+
+    :Parameters:
+        - `asana_api_object`: an instance of Asana
+        - `task_id`: task id
+        - `issue`: instance of class Issue to which comments are added
+    """
+
+    comment = ""
+    all_stories = asana_api_object.list_stories(task_id)
+    for astory in all_stories :
+        if astory['type'] == "comment" :
+            comment = comment + """{}: {} wrote "{}"\n""".format(astory['created_at'], astory['created_by']['name'], astory['text'])
+    issue.create_comment(comment)
 
 def copy_task_to_github(asana_api_object, task, task_id, git_repo, options) :
     """Copy tasks from Asana to Github
@@ -236,7 +253,7 @@ def copy_task_to_github(asana_api_object, task, task_id, git_repo, options) :
     :Parameters:
         - `asana_api_object`: an instance of Asana
         - `a_task`: Asana task object
-        - `task_id`: Task id
+        - `task_id`: task id
         - `git_repo`: repository at Github to whose issues tracker issues will be copied
         - `options`: options parsed by OptionParser
     """
@@ -261,6 +278,10 @@ def copy_task_to_github(asana_api_object, task, task_id, git_repo, options) :
     if not options.dont_update_story :
         story = "{}{}".format("This task can be seen at ", new_issue.html_url)
         add_story_to_assana(asana_api_object, task_id, story)
+
+    """Add stories to Github"""
+    if not options.dont_copy_stories :
+        copy_stories_to_github(asana_api_object, task_id, new_issue)
 
 def migrate_asana_to_github(asana_api_object, project_id, git_repo, options) :
     """Manages copying of tasks from Asana to Github issues
