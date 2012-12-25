@@ -1,6 +1,7 @@
 from asana import asana
 from optparse import OptionParser
 from github import Github
+import dateutil.parser
 
 def parse() :
     """Returns OptionParser instance to parse the command line parameters"""
@@ -244,7 +245,9 @@ def copy_stories_to_github(asana_api_object, task_id, issue) :
     all_stories = asana_api_object.list_stories(task_id)
     for astory in all_stories :
         if astory['type'] == "comment" :
-            comment = comment + """{}: {} wrote "{}"\n""".format(astory['created_at'], astory['created_by']['name'], astory['text'])
+            the_time = dateutil.parser.parse(astory['created_at'])
+            the_time = the_time.strftime("%b-%d-%Y %H:%M %z")
+            comment = comment + """{}: {} wrote "{}"\n""".format(the_time, astory['created_by']['name'], astory['text'])
     issue.create_comment(comment)
 
 def copy_task_to_github(asana_api_object, task, task_id, git_repo, options) :
