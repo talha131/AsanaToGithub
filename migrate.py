@@ -329,7 +329,7 @@ def migrate_asana_to_github(asana_api_object, project_id, git_repo, options) :
             else :
                 should_copy = True
             if should_copy :
-               copy_task_to_github(asana_api_object, task, a_task['id'], git_repo, options) 
+                copy_task_to_github(asana_api_object, task, a_task['id'], git_repo, options) 
             else :
                 print "Task skipped."
 
