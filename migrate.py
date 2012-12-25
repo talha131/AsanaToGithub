@@ -106,9 +106,57 @@ def get_project_id_from_asana(asana_api_object, options) :
                     print "Project {} found".format(options.project)
     return project_id
 
+def print_repos(github_api_object) :
+    """Prints a list of available repos on stdout
+    
+    :Parameter:
+        - `github_api_object`: an instance of Github
+    """
 
+    my_repos = github_api_object.get_user().get_repos() 
+    print "Following repositories are available:"
+    for item in my_repos :
+        print item.full_name
+
+def get_repo(github_api_object, repo_full_name) :
+    """Return an instance of repo
+    
+    :Parameter:
+        - `github_api_object`: an instance of Github
+        - `repo_full_name`: full name of the repo on Github, for example, talha131/try
+    """
+
+    my_repos = github_api_object.get_user().get_repos() 
+    my_repo = None
+    for item in my_repos :
+        if item.full_name == repo_full_name :
+            my_repo = item
+            break
+    return my_repo
+
+def get_repo_from_github(github_api_object, options) :
+    """Return an instance of repo and handle cases when repo is not specified or is invalid
+    
+    :Parameter:
+        - `github_api_object`: an instance of Github
+        - `options`: options parsed by OptionParser
+    """
+
+    my_repo = None
+    if not options.repo :
+        print_repos(github_api_object)
     else :
+        my_repo = get_repo(github_api_object, options.repo)
+        if not my_repo :
+            print "Repository not found. Make sure you have entered complete repository name correctly."
         else :
+            print "Repository {} found.".format(options.repo)
+            if not my_repo.has_issues :
+                print "Issues tracker is disabled for this repo. Make sure you have enabled it in the repository settings at Github."
+                my_repo = None
+            else :
+                print "Issue tracker is enabled"
+    return my_repo
 
 def main() :
     parser = parse()
@@ -133,7 +181,14 @@ def main() :
     my_tasks = get_tasks(asana_api, project_id)
     print my_tasks
 
-    return
+    github_api = Github(args[1], args[2])
+
+    git_repo = get_repo_from_github(github_api, options)
+    
+    if not git_repo:
+        exit(1)
+
+    exit(0)
 
 if __name__ == '__main__' :
     main()
