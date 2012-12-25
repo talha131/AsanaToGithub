@@ -1,12 +1,14 @@
 from asana import asana
 from optparse import OptionParser
+from github import Github
 
 def parse() :
     """Returns OptionParser instance to parse the command line parameters"""
 
-    parser = OptionParser("usage: %prog [options] ASANA-API-KEY")
+    parser = OptionParser("usage: %prog [options] Asana-API-Key Github-username Github-password")
     parser.add_option("-w", "--workspace", dest="workspace", help="workspace which has the project you want to export to github. If none is specified a list of available workspaces is printed.")
     parser.add_option("-p", "--project", dest="project", help="project which has the items you want to export to github. If none is specified a list of available projects is printed.")
+    parser.add_option("-r", "--repo", dest="repo", help="Github repository to whose issue tracker Asana tasks will be moved to. If none is specified a list of available repos is printed.")
     return parser
 
 def print_workspaces(asana_api_object) :
@@ -87,8 +89,14 @@ def main() :
     parser = parse()
     (options, args) = parser.parse_args()
 
-    if not args :
-        parser.error("Asana API Key is mandatory")
+    if len(args) != 3 :
+        if len(args) == 0  :
+            parser.error("Asana API Key is required")
+        if len(args) == 1 :
+            parser.error("Github username is required")
+        if len(args) == 2 :
+            parser.error("Github password is required")
+        exit(1)
 
     asana_api = asana.AsanaAPI(args[0], debug=True)  
 
