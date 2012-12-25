@@ -85,6 +85,36 @@ def get_tasks(asana_api_object, project_id) :
 
     return asana_api_object.get_project_tasks(project_id)
 
+def get_project_id_from_asana(asana_api_object, options) :
+    """Returns project id and handle cases when workspace or project is not specified at command line
+
+    :Parameter:
+        - `asana_api_object`: an instance of Asana
+        - `options`: options parsed by OptionParser
+    """
+
+    if not options.workspace :
+        print_workspaces(asana_api_object)
+    else :  
+        workspace_id = get_workspace_id(asana_api_object, options.workspace)
+        if workspace_id < 0 :
+            print "Workspace not found. Make sure you have entered correct workspace name."
+            return
+        else :
+            print "Workspace {} found".format(options.workspace)
+
+    if not options.project :
+        print_projects(asana_api_object, workspace_id)
+    else :
+        project_id = get_project_id(asana_api_object, workspace_id, options.project)
+        if project_id < 0 :
+            print "Project not found. Make sure you have entered correct project name."
+            return
+        else :
+            print "Project {} found".format(options.project)
+
+    return project_id
+
 def main() :
     parser = parse()
     (options, args) = parser.parse_args()
@@ -100,25 +130,10 @@ def main() :
 
     asana_api = asana.AsanaAPI(args[0], debug=True)  
 
-    if not options.workspace :
-        print_workspaces(asana_api)
-    else :  
-        workspace_id = get_workspace_id(asana_api, options.workspace)
-        if workspace_id < 0 :
-            print "Workspace not found"
-            exit(1)
-        else :
-            print "Workspace {} found".format(options.workspace)
+    project_id = get_project_id_from_asana(asana_api, options)
 
-    if not options.project :
-        print_projects(asana_api, workspace_id)
-    else :
-        project_id = get_project_id(asana_api, workspace_id, options.project)
-        if project_id < 0 :
-            print "Project not found"
-            exit(1)
-        else :
-            print "Project {} found".format(options.project)
+    if not project_id :
+        exit(1)
 
     my_tasks = get_tasks(asana_api, project_id)
     print my_tasks
