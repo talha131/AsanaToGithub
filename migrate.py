@@ -272,16 +272,16 @@ def copy_task_to_github(asana_api_object, task, task_id, git_repo, options) :
             labels.append(a_label)
     new_issue = git_repo.create_issue(task['name'], task['notes'], labels = labels)
 
+    """Add stories to Github"""
+    if not options.dont_copy_stories :
+        copy_stories_to_github(asana_api_object, task_id, new_issue)
+
     """Update Asana"""
     if not options.dont_apply_tag :
         apply_tag_at_asana(asana_api_object, "copied to github", task['workspace']['id'], task_id)
     if not options.dont_update_story :
         story = "{}{}".format("This task can be seen at ", new_issue.html_url)
         add_story_to_assana(asana_api_object, task_id, story)
-
-    """Add stories to Github"""
-    if not options.dont_copy_stories :
-        copy_stories_to_github(asana_api_object, task_id, new_issue)
 
 def migrate_asana_to_github(asana_api_object, project_id, git_repo, options) :
     """Manages copying of tasks from Asana to Github issues
