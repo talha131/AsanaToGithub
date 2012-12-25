@@ -248,7 +248,9 @@ def copy_stories_to_github(asana_api_object, task_id, issue) :
             the_time = dateutil.parser.parse(astory['created_at'])
             the_time = the_time.strftime("%b-%d-%Y %H:%M %z")
             comment = comment + """{}: {} wrote "{}"\n""".format(the_time, astory['created_by']['name'], astory['text'])
-    issue.create_comment(comment)
+
+    if len(comment) > 0 :
+        issue.create_comment(comment)
 
 def copy_task_to_github(asana_api_object, task, task_id, git_repo, options) :
     """Copy tasks from Asana to Github
