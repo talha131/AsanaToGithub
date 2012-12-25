@@ -172,19 +172,12 @@ def main() :
         exit(1)
 
     asana_api = asana.AsanaAPI(args[0], debug=True)  
-
     project_id = get_project_id_from_asana(asana_api, options)
-
     if not project_id :
         exit(1)
 
-    my_tasks = get_tasks(asana_api, project_id)
-    print my_tasks
-
     github_api = Github(args[1], args[2])
-
     git_repo = get_repo_from_github(github_api, options)
-    
     if not git_repo:
         exit(1)
 
