@@ -255,7 +255,7 @@ def copy_stories_to_github(asana_api_object, task_id, issue) :
         comment = "### Comments\n" + comment
     if len(attachment) > 0 :
         attachment = "### Attachments\n" + attachment 
-    if len(comment) > 0 and len(attachment) > 0 :
+    if len(comment) > 0 or len(attachment) > 0 :
         final_comment = attachment + "\n" + comment
         issue.create_comment(final_comment)
 
