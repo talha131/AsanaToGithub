@@ -87,27 +87,28 @@ def get_project_id_from_asana(asana_api_object, options) :
         - `options`: options parsed by OptionParser
     """
 
+    project_id = None
     if not options.workspace :
         print_workspaces(asana_api_object)
     else :  
         workspace_id = get_workspace_id(asana_api_object, options.workspace)
         if not workspace_id :
             print "Workspace not found. Make sure you have entered correct workspace name."
-            return
         else :
             print "Workspace {} found".format(options.workspace)
-
-    if not options.project :
-        print_projects(asana_api_object, workspace_id)
-    else :
-        project_id = get_project_id(asana_api_object, workspace_id, options.project)
-        if not project_id :
-            print "Project not found. Make sure you have entered correct project name."
-            return
-        else :
-            print "Project {} found".format(options.project)
-
+            if not options.project :
+                print_projects(asana_api_object, workspace_id)
+            else :
+                project_id = get_project_id(asana_api_object, workspace_id, options.project)
+                if not project_id :
+                    print "Project not found. Make sure you have entered correct project name."
+                else :
+                    print "Project {} found".format(options.project)
     return project_id
+
+
+    else :
+        else :
 
 def main() :
     parser = parse()
