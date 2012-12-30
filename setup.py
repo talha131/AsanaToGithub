@@ -11,7 +11,7 @@ dependency_links = [
         'https://github.com/talha131/asana/tarball/master#egg=asana-0.0.1',
     ]
 
-name = 'asana_to_github'
+name = 'AsanaToGithub'
 
 setup(
     name = name,
