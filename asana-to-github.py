@@ -247,7 +247,7 @@ def copy_stories_to_github(asana_api_object, task_id, issue) :
         if astory['type'] == "comment" :
             the_time = dateutil.parser.parse(astory['created_at'])
             the_time = the_time.strftime("%b-%d-%Y %H:%M %Z")
-            comment = comment + """*{}*: **{}** wrote "{}"\n""".format(the_time, astory['created_by']['name'].encode("utf-8"), astory['text'].encode("utf-8").strip())
+            comment = comment + """*{}*: **{}** wrote "{}"\n""".format(the_time, astory['created_by']['name'].encode("utf-8"), astory['text'].encode("utf-8").replace("\n",""))
         if astory['type'] == "system" and astory['text'][:9] == "attached " :
             attachment = attachment + "1. [Link to attachment]({})\n".format(astory['text'][9:])
 
