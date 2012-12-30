@@ -1,11 +1,14 @@
 from setuptools import setup, find_packages
 from asana_to_github import __version__ as version
 
-install_requires = []
+install_requires = [
+        'PyGithub==1.9.1',
+        'asana==0.0.1',
+        'python-dateutil==1.5',
+        ]
 
 dependency_links = [
-    'git+git://github.com/jacquev6/PyGithub.git',
-    'git+git://github.com/talha131/asana.git',
+        'https://github.com/talha131/asana/tarball/master#egg=asana-0.0.1',
     ]
 
 name = 'asana_to_github'
@@ -21,7 +24,7 @@ setup(
     url = 'https://github.com/talha131/asana-to-github',
     packages=find_packages(),
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: Stable',
         'License :: OSI Approved :: Apache Software License',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Bug Tracking',
@@ -31,4 +34,8 @@ setup(
         'Intended Audience :: Developers',
         ],
     install_requires=install_requires,
+    dependency_links = dependency_links,
+    entry_points = {
+        'console_scripts': ['asanatogithub = asana_to_github.asana_to_github:main']
+        }
     )
