@@ -7,14 +7,14 @@ def parse() :
     """Returns OptionParser instance to parse the command line parameters"""
 
     parser = OptionParser("usage: %prog [options] Asana-API-Key Github-username Github-password")
-    parser.add_option("-w", "--workspace", dest="workspace", help="workspace which has the project you want to export to github. If none is specified a list of available workspaces is printed.")
-    parser.add_option("-p", "--project", dest="project", help="project which has the items you want to export to github. If none is specified a list of available projects is printed.")
-    parser.add_option("-r", "--repo", dest="repo", help="Github repository to whose issue tracker Asana tasks will be copied to. If none is specified a list of available repos is printed.")
-    parser.add_option("-i", "--interactive", action="store_true", dest="interactive", default=False, help="request confirmation before attempting to copy task to Github")
+    parser.add_option("-w", "--workspace", dest="workspace", help="WORKSPACE name which has the project you want to copy to Github. If none is specified a list of available workspaces is printed.")
+    parser.add_option("-p", "--project", dest="project", help="PROJECT name which has the items you want to copy to Github. If none is specified a list of available projects is printed.")
+    parser.add_option("-r", "--repo", dest="repo", help="Github REPOsitory name to whose issue tracker you want to copy Asana tasks. If none is specified a list of available repositories is printed.")
+    parser.add_option("-i", "--interactive", action="store_true", dest="interactive", default=False, help="request confirmation before attempting to copy each task to Github")
     parser.add_option("--copy-completed-tasks", action="store_true", dest="copy_completed", default=False, help="completed Asana tasks are not copied. Use this switch to force copy of completed tasks.")
     parser.add_option("--dont-apply-tag", action="store_true", dest="dont_apply_tag", default=False, help="every task copied to Github gets a tag copied-to-github at Asana. Use this switch to disable it.")
     parser.add_option("--dont-apply-label", action="store_true", dest="dont_apply_label", default=False, help="every issue copied to Github gets a label copied-from-asana at Github. Use this switch to disable it.")
-    parser.add_option("--dont-apply-project-label", action="store_true", dest="dont_apply_project_label", default=False, help="Asana project is applied as label at Github to the copied task. Use this switch to disable it.")
+    parser.add_option("--dont-apply-project-label", action="store_true", dest="dont_apply_project_label", default=False, help="Asana project name is applied as label to the copied task at Github. Use this switch to disable it.")
     parser.add_option("--dont-update-story", action="store_true", dest="dont_update_story", default=False, help="link of copied Github issues is added to Asana task story. Use this switch to disable it.")
     parser.add_option("--dont-copy-stories", action="store_true", dest="dont_copy_stories", default=False, help="Asana task stories are added as comment to the Github issue. Use this switch to disable it.")
     return parser
@@ -27,7 +27,7 @@ def print_workspaces(asana_api_object) :
     """
 
     my_spaces = asana_api_object.list_workspaces()
-    print "Following workspaces are available:"
+    print "Following Asana workspaces are available:"
     for item in my_spaces :
         print item['name']
 
@@ -56,7 +56,7 @@ def print_projects(asana_api_object, workspace_id) :
     """
 
     my_projects = asana_api_object.list_projects(workspace_id)
-    print "Following projects are available:"
+    print "Following projects are available in it:"
     for item in my_projects :
         print item['name']
 
@@ -122,7 +122,7 @@ def print_repos(github_api_object) :
     """
 
     my_repos = github_api_object.get_user().get_repos() 
-    print "Following repositories are available:"
+    print "Following Github repositories are available:"
     for item in my_repos :
         print item.full_name
 
