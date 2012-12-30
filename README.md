@@ -24,7 +24,7 @@ python setup.py install
 
 Once you have install AsanaToGithub it will be available as `asanatogithub` on your terminal. Three arguments are required to use AsanaToGithub.
 
-1. Your Asana API key. Get your API key from [this link](http://app.asana.com/-/account_api)
+1. Your Asana API key. Get your API key from [this link](http://app.asana.com/-/account_api).
 1. Your Github user name. For example talha131
 1. Your Github password.
 
@@ -43,6 +43,8 @@ asanatogithub Nmklki.Popsdsq1sdfff talha131 guess_my_pwd -w Personal -p Example 
 ```
 
 This will copy all items of "Example" project, which is in my "Personal" workspace to the issue tracker of AsanaToGithub repository. 
+
+You can see a sample issue create via Asana project "Example" at [this link](https://github.com/talha131/AsanaToGithub/issues/1).
 
 Use `--help` to see all the options.
 
