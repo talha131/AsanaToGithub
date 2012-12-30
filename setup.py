@@ -1,12 +1,14 @@
 from setuptools import setup, find_packages
 from asana_to_github import __version__ as version
 
-install_requires = [
+install_requires = []
+
+dependency_links = [
     'git+git://github.com/jacquev6/PyGithub.git',
     'git+git://github.com/talha131/asana.git',
     ]
 
-name = 'Asana to Github'
+name = 'asana_to_github'
 
 setup(
     name = name,
