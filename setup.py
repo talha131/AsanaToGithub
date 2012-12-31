@@ -38,8 +38,9 @@ setup(
     This is a `sample Github issue <https://github.com/talha131/AsanaToGithub/issues/1>`_ copied from Asana using AsanaToGithub.
     """,
     license = 'Apache License, (2.0)',
-    keywords = 'asana github issues issue tracker',
+    keywords = 'Asana, Github, Github issues, issue tracker',
     url = 'https://github.com/talha131/asana-to-github',
+    download_url = 'https://github.com/talha131/AsanaToGithub/tarball/master',
     packages=find_packages(),
     classifiers=[
         'Development Status :: 5 - Production/Stable',
