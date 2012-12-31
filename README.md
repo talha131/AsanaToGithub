@@ -6,7 +6,13 @@ Asana task's title and note is created as Github issue. The comments and attachm
 
 # How to Install
 
-Use `pip` to install
+To install from [Pypi](http://pypi.python.org/pypi/AsanaToGithub/),
+
+```bash
+pip install AsanaToGithub
+```
+
+To install from Github,
 
 ```bash
 pip install git+https://github.com/talha131/AsanaToGithub.git
